@@ -8,11 +8,10 @@ function Dashboard() {
   return (
     <div className="main_container">
       <div className="sidebar_container h-[100vh]">
-        <DefaultSidebar></DefaultSidebar>
+        <DefaultSidebar/>
       </div>
       <div className="body_container overflow-y-auto">
         <MyRoutes/>
-        {/* <InventoryForm/> */}
       </div>
     </div>
   );

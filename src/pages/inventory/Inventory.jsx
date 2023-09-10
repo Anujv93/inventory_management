@@ -1,10 +1,40 @@
-import InventoryTable from "./components/InventoryTables";
 import { Button,Modal } from "flowbite-react";
 import {useState} from "react";
 import InventoryForm from "../../components/forms/InventoryForm";
+import { useSelector } from "react-redux";
+
+import { selectUser } from "../../features/user/userSlice";
+import {  useEffect } from 'react';
+import TableComponent from '../../components/table'; // You should import your TableComponent here
+import { db } from '../../firebase/config';
+import {
+  collection,
+  onSnapshot,
+  query,
+  where,
+} from 'firebase/firestore';
 
 function InventoryPage() {
   const [openModal, setOpenModal] = useState();
+  const [selectedItem, setSelectedItem] = useState(null);
+  // Handle Edit action
+const handleEditItem = (item) => {
+  // Implement the logic to open a modal for editing the item
+
+  setSelectedItem(item); // Set the selected item to the state
+  setOpenModal('editProduct'); 
+};
+
+// Handle Update action
+
+
+// Handle Delete action
+const handleDeleteItem = (item) => {
+  // Implement the logic to delete the item from Firebase Firestore
+  alert("clieked delete item" + item.id)
+};
+
+
 
   const openAddProductModal = () => {
     setOpenModal('addProduct');
@@ -13,14 +43,39 @@ function InventoryPage() {
   const closeAddProductModal = () => {
     setOpenModal(undefined);
   };
+const [inventoryData, setInventoryData] = useState([]);
+  const currentUser = useSelector(selectUser);
+  const plant = JSON.parse(localStorage.getItem("selectedPlant"));
+  const inventoryColumns = [
+    'itemName',
+    'partNo',
+    'rackNo',
+    'qty',
+    'issueQty',
+    'netQty',
+    'remark',
+  ];
 
+   useEffect(() => {
+    // Fetch inventory data from Firebase
+    const q = query(collection(db, 'inventory'),where("plant","==",plant));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = [];
+      snapshot.forEach((item) => {
+        data.push({ id: item.id, ...item.data() });
+      });
+      setInventoryData(data);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
     return (
     <div>
     <div className="p-4 bg-white block sm:flex items-center justify-between border-b border-gray-200 lg:mt-1.5 dark:bg-gray-800 dark:border-gray-700">
       <div className="w-full mb-1">
         <div className="mb-4">
-          <h1 className="text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white">All products</h1>
+          <h1 className="text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white">All products <br/>{currentUser.email} <br/>{plant} </h1>
         </div>
         <div className="items-center justify-between block sm:flex md:divide-x md:divide-gray-100 dark:divide-gray-700">
           <div className="flex items-center mb-4 sm:mb-0">
@@ -54,10 +109,6 @@ function InventoryPage() {
             </div>
           </div>
           <Button onClick={openAddProductModal}> ADD PRODUCT </Button>
-          {/* <button id="createProductButton" className="flex items-center text-white bg-blue-600 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-small rounded-lg text-sm px-5 py-2.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800" type="button" data-drawer-target="drawer-create-product">
-            <svg className="-ml-0.5 mr-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-            Create Product
-          </button> */}
         </div>
       </div>
     </div>
@@ -65,7 +116,20 @@ function InventoryPage() {
     <div className="overflow-auto">
         <div className="inline-block min-w-full align-middle">
             <div className="overflow-hidden shadow">
-                <InventoryTable></InventoryTable>
+                <TableComponent
+        data={inventoryData}
+        columns={inventoryColumns}
+        actions={[
+    {
+      label: 'Update',
+      onClick: (item) => handleEditItem(item), // Define the handleEditItem function
+    },
+    {
+      label: 'Delete',
+      onClick: (item) => handleDeleteItem(item), // Define the handleDeleteItem function
+    },
+  ]}
+      />
             </div>
         </div>
     </div>
@@ -79,16 +143,27 @@ function InventoryPage() {
       >
         <Modal.Header>Add Inventory</Modal.Header>
         <Modal.Body>
-
         <InventoryForm closeModal={closeAddProductModal} />
-        
         </Modal.Body>
-        <Modal.Footer>
-          <Button className="w-full">Submit</Button>
-        </Modal.Footer>
+      </Modal>
+      <Modal
+        dismissible
+        show={openModal === 'editProduct'} // Check if the modal should be shown for editing
+        onClose={() => {
+          setOpenModal(undefined); // Close the modal when needed
+          setSelectedItem(null); // Clear the selected item
+        }}
+        className="modal_class rounded-lg shadow-md "
+        style={{ overlay: { background: 'rgba(0, 0, 0, 0.5)' } }}
+      >
+        <Modal.Header>Edit Inventory</Modal.Header>
+        <Modal.Body>
+          {selectedItem && <InventoryForm closeModal={() => setOpenModal(undefined)} itemToEdit={selectedItem} />}
+        </Modal.Body>
       </Modal>
 </div>
   );
 }
 
 export default InventoryPage
+

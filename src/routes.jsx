@@ -1,6 +1,6 @@
 import {Routes,Route} from 'react-router-dom';
 import BillingPage from './pages/billings/billing';
-import InventoryPage from './pages/inventory/inventory';
+import InventoryPage from './pages/inventory/Inventory';
 
 
 function MyRoutes() {

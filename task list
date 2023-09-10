@@ -1,0 +1,5 @@
+1.  add inventory to firebase
+2.  read inventory data to table from firebase
+3.  Edit data and store updates in the firebase 
+4.  delete data from firebase and store in archive
+5.  

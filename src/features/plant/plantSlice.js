@@ -1,12 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage";
 
-const initialState = {
-  plant: "",
+const persistConfig = {
+  key: "plant",
+  storage,
 };
 
 export const plantSlice = createSlice({
   name: "plant",
-  initialState,
+  initialState: {
+    plant: null,
+  },
   reducers: {
     updatePlant: (state, action) => {
       state.plant = action.payload;
@@ -15,4 +20,9 @@ export const plantSlice = createSlice({
 });
 
 export const { updatePlant } = plantSlice.actions;
-export default plantSlice.reducer;
+
+export const selectPlant = (state) => state.plant.plant;
+
+const persistedPlantReducer = persistReducer(persistConfig, plantSlice.reducer);
+
+export default persistedPlantReducer;
