@@ -1,7 +1,7 @@
 import './sidebar.css';
 
 import { Sidebar,Button } from 'flowbite-react';
-import { HiInbox, HiShoppingBag, HiViewBoards } from 'react-icons/hi';
+import { HiInbox, HiViewBoards } from 'react-icons/hi';
 import InlineDropdown from './DropMenu';
 import { auth } from '../../firebase/config';
 
@@ -21,23 +21,7 @@ export default function ContentSeparator() {
           S.R. Ferros
         </p>
       </Sidebar.Logo>
-          <Sidebar.Collapse
-            icon={HiShoppingBag}
-            label="E-commerce"
-          >
-            <Sidebar.Item href="#">
-              Products
-            </Sidebar.Item>
-            <Sidebar.Item href="#">
-              Sales
-            </Sidebar.Item>
-            <Sidebar.Item href="#">
-              Refunds
-            </Sidebar.Item>
-            <Sidebar.Item href="#">
-              Shipping
-            </Sidebar.Item>
-          </Sidebar.Collapse>
+         
           <Sidebar.Item
             href="/inventory"
             icon={HiViewBoards}
@@ -53,6 +37,9 @@ export default function ContentSeparator() {
             <p>
               Billing
             </p>
+          </Sidebar.Item>
+          <Sidebar.Item href="/tollkanta">
+            <p> Toll Kanta</p>
           </Sidebar.Item>
         </Sidebar.ItemGroup>
         <Sidebar.ItemGroup className='sidebar_item_group'>
